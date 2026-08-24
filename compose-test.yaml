@@ -1,11 +1,27 @@
+x-healthcheck: &healthcheck
+  interval: 5s
+  retries: 2
+  start_period: 1m
+  timeout: 30s
+networks:
+  services_default:
+    external: true
 services:
   home-assistant:
     container_name: home-assistant
+    environment:
+      TZ: Europe/Budapest
+    healthcheck:
+      <<: *healthcheck
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8123"]
     image: ghcr.io/home-assistant/home-assistant:stable
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.home-assistant.entrypoints=websecure
+      - traefik.http.routers.home-assistant.rule=Host(`home-assistant.localhost`)
+      - traefik.http.routers.home-assistant.tls=true
+      - traefik.http.services.home-assistant.loadbalancer.server.port=8123
+    networks:
+      - services_default
     volumes:
       - /tmp/home-assistant:/config
-    restart: unless-stopped
-    ports:
-      - "8123:8123"
-    environment:
-      - TZ=Europe/Budapest
