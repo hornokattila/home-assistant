@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
-DEST="/home/outsideworx/home-assistant"
+DEST="/home/hornokattila/home-assistant"
 
 set -e
 
